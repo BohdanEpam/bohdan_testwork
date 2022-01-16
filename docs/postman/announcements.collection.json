@@ -1,0 +1,299 @@
+{
+	"info": {
+		"_postman_id": "8398f2b9-fcfd-419c-b035-5ee1baf477a6",
+		"name": "Announcements",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "tests",
+			"item": [
+				{
+					"name": "New item and duplication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"New item Created test. Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const base_url = pm.environment.get(\"base_url\")",
+									"",
+									"const req = {",
+									"    url: `${base_url}/announcement`,",
+									"    method: \"POST\",",
+									"    header: pm.request.headers,",
+									"    body: pm.request.body",
+									"}",
+									"",
+									"pm.sendRequest(req, function(err, res) {",
+									"    const responseJson = res.json();",
+									"    console.log()",
+									"    pm.test(\"Item already exists test. Status code is 409\", function () {",
+									"        pm.expect(res.code).to.eql(409)",
+									"        pm.expect(responseJson.message).to.eql(\"an existing item already exists\")",
+									"    });",
+									"})",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const timestamp = new Date().getUTCMilliseconds();",
+									"const unique_title = `Test title_${timestamp}` ",
+									"",
+									"let body = {",
+									"  \"date\" : \"2000-01-23T04:56:07.000+00:00\",",
+									"  \"description\" : \"Description of ther announceement\",",
+									"  \"title\" : unique_title",
+									"}",
+									"",
+									"pm.collectionVariables.set('req_body', JSON.stringify(body));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{req_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/announcement",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"announcement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New item Bad request body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();",
+									"",
+									"pm.test(\"New item Created test. Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(responseJson.message).to.eql(\"invalid input, object invalid\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const timestamp = new Date().getUTCMilliseconds();",
+									"const unique_title = `Test title_${timestamp}` ",
+									"",
+									"let body = {",
+									"  \"date\" : \"2000-01-23T04:56:07.000+00:00\",",
+									"  \"description\" : \"Description of ther announceement\",",
+									"  \"title2\" : unique_title // wrong field name",
+									"}",
+									"",
+									"pm.collectionVariables.set('bad_req_body', JSON.stringify(body));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{bad_req_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/announcement",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"announcement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get announcements success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get all announcement. Success. 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/announcement",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"announcement"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get announcements failed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const respJson = pm.response.json();",
+									"",
+									"pm.test(\"Get all failed. Bad input parameter\", function () {",
+									"    pm.response.to.have.status(400);",
+									"    pm.expect(respJson.message).to.eql(\"bad input parameter\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/announcement?skip=abc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"announcement"
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create announcement",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"date\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"description\" : \"Description of ther announceement\",\n  \"title\" : \"please enter\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/announcement",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"announcement"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get announcements",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/announcement",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"announcement"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "req_body",
+			"value": ""
+		},
+		{
+			"key": "bad_req_body",
+			"value": ""
+		}
+	]
+}
