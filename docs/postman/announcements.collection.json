@@ -96,7 +96,7 @@
 								"exec": [
 									"const responseJson = pm.response.json();",
 									"",
-									"pm.test(\"New item Created test. Status code is 400\", function () {",
+									"pm.test(\"New item Bad request body. Status code is 400\", function () {",
 									"    pm.response.to.have.status(400);",
 									"    pm.expect(responseJson.message).to.eql(\"invalid input, object invalid\")",
 									"});"
@@ -262,9 +262,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
+							""
 						],
 						"type": "text/javascript"
 					}
