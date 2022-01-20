@@ -33,7 +33,7 @@
 									"    console.log()",
 									"    pm.test(\"Item already exists test. Status code is 409\", function () {",
 									"        pm.expect(res.code).to.eql(409)",
-									"        pm.expect(responseJson.message).to.eql(\"an existing item already exists\")",
+									"        pm.expect(responseJson.message).to.eql(\"an item already exists\")",
 									"    });",
 									"})",
 									"",

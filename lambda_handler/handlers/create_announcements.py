@@ -1,8 +1,12 @@
 import json
+import logging
 import trafaret as t
 from botocore.exceptions import ClientError
 from .schemas import AnnouncementsTableSchema
 from .handler_helpers import generate_json_response
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def create_announcement(event: dict, table) -> dict:
@@ -17,6 +21,7 @@ def create_announcement(event: dict, table) -> dict:
     try:
         validated = AnnouncementsTableSchema.check(body)
     except t.DataError as e:
+        logger.exception(f"[Create announcement. ValidationError]: {e}")
         return generate_json_response(400, {"message": "invalid input, object invalid"})
 
     try:
@@ -26,17 +31,10 @@ def create_announcement(event: dict, table) -> dict:
         return generate_json_response(201, {"message": "item created"})
 
     except ClientError as e:
+        logger.exception(f"[DynamoDb ClientError]: {e}")
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
-            return generate_json_response(
-                409, {"message": "an existing item already exists"}
-            )
-        return generate_json_response(
-            500,
-            {
-                "message": e.response.get("Error", {}).get(
-                    "Message", "Something went wrong"
-                )
-            },
-        )
+            return generate_json_response(409, {"message": "an item already exists"})
+        return generate_json_response(500, {"message": "Something went wrong"})
     except Exception as e:
-        return generate_json_response(500, {"message": f"Something went wrong: {e}"})
+        logger.exception(f"[Unexpected error]: {e}")
+        return generate_json_response(500, {"message": "Something went wrong"})
